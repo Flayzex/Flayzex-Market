@@ -1,0 +1,101 @@
+:root {
+    --main-color: #1a2026;
+    --secondary-color: #212932;
+    --text-color: #8794a1;
+}
+
+body {
+    background-color: var(--main-color);
+    color: white;
+    font-weight: bold;
+}
+
+header {
+    background-color: var(--secondary-color);
+}
+
+main {
+    padding-bottom: 45px;
+}
+
+.nav a {
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.nav a:hover {
+    color: #fff
+}
+
+.nav .home-btn {
+    cursor: default;
+    color: #fff;
+}
+
+.text-color {
+    color: var(--text-color)
+}
+
+
+.stars-input {
+    background-color: var(--secondary-color);
+    border: none;
+    height: 48px;
+    max-width: 500px;
+    color: #fff
+}
+
+.stars-input:focus {
+    background-color: var(--secondary-color);
+    color: #fff;
+}
+
+.stars-input::placeholder {
+    color: var(--text-color)
+}
+
+.stars-input:disabled {
+    background-color: var(--secondary-color) !important;
+
+    color: #fff !important;
+}
+
+.stars-price {
+    background-color: var(--secondary-color);
+    border: none;
+    max-width: 500px;
+    color: #fff;
+    padding: 15px;
+}
+
+.btn-buy-stars {
+    width: 500px;
+    padding: 15px;
+    font-weight: bold;
+
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--secondary-color);
+    color: var(--text-color)
+}
+
+footer a {
+    text-decoration: none;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+footer a,
+footer a img {
+    transition: color 0.2s ease, filter 0.2s ease;
+}
+
+footer a:hover,
+footer a:hover img {
+    color: white;
+    filter: brightness(0) invert(1); /* Делает изображение белым */
+}
