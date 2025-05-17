@@ -55,10 +55,16 @@ main {
 .stars-input:focus {
     background-color: var(--secondary-color);
     color: #fff;
+    box-shadow: none;
 }
 
 .stars-input::placeholder {
     color: var(--text-color)
+}
+
+.stars-input:focus::placeholder {
+    color: #a6a6a6;
+    transition-duration: 0.3s;
 }
 
 .stars-input:disabled {
