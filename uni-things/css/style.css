@@ -1,0 +1,421 @@
+/* ================================================= */
+/* === 1. ПЕРЕМЕННЫЕ ЦВЕТОВ (СВЕТЛАЯ ТЕМА ПО УМОЛЧАНИЮ) === */
+/* ================================================= */
+:root {
+    /* Общие цвета */
+    --bg-color: #f4f4f9; /* Фон страницы */
+    --text-color: #333; /* Основной текст */
+    --main-header-color: #2c3e50; /* Заголовки H1 */
+    --secondary-header-color: #3498db; /* Заголовки H2 (для якорей) */
+    --block-bg: #fff; /* Фон блоков (аккордеон, список) */
+    --border-color: #ddd; /* Общая рамка */
+
+    /* Аккордеон и вопросы */
+    --question-header-bg: #ecf0f1;
+    --question-header-hover: #dce1e4;
+    --question-text-color: #e74c3c; /* Цвет вопроса */
+    --answer-border-color: #2ecc71; /* Зеленая полоса ответа */
+
+    /* Поиск и кнопки (beautiful-button, search button) */
+    --search-bg: #f0f0f0;
+    --search-border: #ccc;
+    --search-input-bg: #fff;
+    --search-input-border: #aaa;
+    --button-primary-bg: #007bff;
+    --button-primary-color: #ffffff;
+    --button-primary-hover: #0056b3;
+
+    /* Подсветка поиска */
+    --highlight-color: yellow;
+    --current-highlight-color: orange;
+
+    /* Навигация "Назад вверх" */
+    --back-to-top-color: #95a5a6;
+    --back-to-top-hover-color: #7f8c8d;
+
+    /* Футер */
+    --footer-bg: #f0f0f0;
+    --footer-text: #666;
+
+    /* Кнопка переключения темы */
+    --toggle-button-bg: #007bff;
+    --toggle-button-text: #ffffff;
+    --toggle-icon-color: #ffc107;
+}
+
+/* ================================================= */
+/* === 2. ТЁМНАЯ ТЕМА (КЛАСС .dark-theme) === */
+/* ================================================= */
+.dark-theme {
+    /* Общие цвета */
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --main-header-color: #bb86fc;
+    --secondary-header-color: #6200ee;
+    --block-bg: #1e1e1e;
+    --border-color: #383838;
+
+    /* Аккордеон и вопросы */
+    --question-header-bg: #2c2c2c;
+    --question-header-hover: #3a3a3a;
+    --question-text-color: #ff8a80;
+    --answer-border-color: #cbcbcb;
+
+    /* Поиск и кнопки */
+    --search-bg: #1f1f1f;
+    --search-border: #cbcbcb;
+    --search-input-bg: #3f3f3f;
+    --search-input-border: #4a4a4a;
+    --button-primary-bg: #6200ee;
+    --button-primary-color: #ffffff;
+    --button-primary-hover: #3700b3;
+
+    /* Подсветка поиска */
+    --highlight-color: #3700b3;
+    --current-highlight-color: #9c27b0;
+
+    /* Навигация "Назад вверх" */
+    --back-to-top-color: #999;
+    --back-to-top-hover-color: #ccc;
+
+    /* Футер */
+    --footer-bg: #1e1e1e;
+    --footer-text: #999;
+
+    /* Кнопка переключения темы */
+    --toggle-button-bg: #cbcbcb;
+    --toggle-button-text: #121212;
+    --toggle-icon-color: #e0e0e0;
+}
+
+/* ================================================= */
+/* === 3. ПРИМЕНЕНИЕ СТИЛЕЙ С ПЕРЕМЕННЫМИ (ОСНОВА) === */
+/* ================================================= */
+
+/* Базовые стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    padding-top: 60px; /* Отступ для фиксированных элементов (поиск + кнопка) */
+}
+
+h1 {
+    color: var(--main-header-color);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+h2 {
+    color: var(--secondary-header-color);
+    padding-top: 50px;
+    margin-top: -50px;
+    border-bottom: 2px solid var(--secondary-header-color);
+    padding-bottom: 5px;
+    font-size: 1.4em;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+/* --- Стили Списка вопросов (если используется) --- */
+ul.questions-list {
+    list-style-type: none;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    background-color: var(--block-bg);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+ul.questions-list li {
+    margin-bottom: 8px;
+}
+
+ul.questions-list a {
+    text-decoration: none;
+    color: var(--question-text-color);
+    font-weight: bold;
+    display: block;
+    padding: 3px 0;
+    transition: color 0.2s;
+}
+
+ul.questions-list a:hover {
+    color: var(
+        --question-text-color
+    ); /* Используем ту же переменную, но можно и отдельную */
+    text-decoration: underline;
+}
+
+/* --- Стили Блоков ответов (если не аккордеон) --- */
+.answer-block {
+    margin-bottom: 40px;
+    padding: 15px;
+    background-color: var(--block-bg);
+    border-left: 5px solid var(--answer-border-color);
+    border-radius: 0 5px 5px 0;
+    transition: background-color 0.3s;
+}
+
+.answer-block p {
+    line-height: 1.6;
+    margin: 0;
+    padding: 5px 0;
+}
+
+.answer-block ul {
+    padding-left: 20px;
+}
+
+/* --- Стили "Назад вверх" --- */
+.back-to-top {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: var(--back-to-top-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-to-top:hover {
+    color: var(--back-to-top-hover-color);
+}
+
+/* ================================================= */
+/* === 4. СТИЛИ АККОРДЕОНА (Используются переменные) === */
+/* ================================================= */
+.accordion-item {
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: var(--block-bg);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.question-header {
+    background-color: var(--question-header-bg);
+    padding: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: var(--question-text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.question-header:hover {
+    background-color: var(--question-header-hover);
+}
+
+.accordion-item.active .question-header {
+    background-color: var(--question-header-hover);
+}
+
+.question-header .icon {
+    font-size: 1.2em;
+    transition: transform 0.3s;
+}
+
+.accordion-item.active .question-header .icon {
+    transform: rotate(90deg);
+}
+
+.answer-content {
+    padding: 0 15px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    border-left: 5px solid var(--answer-border-color);
+}
+
+.answer-content.show {
+    max-height: 2000px;
+    padding: 15px;
+}
+
+.answer-content p {
+    line-height: 1.6;
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+
+.answer-content ul {
+    margin: 10px 0 10px 20px;
+    padding: 0;
+}
+
+/* ================================================= */
+/* === 5. СТИЛИ ПОИСКОВОЙ ПАНЕЛИ И ПОДСВЕТКИ === */
+/* ================================================= */
+
+#search-bar-container {
+    position: fixed; /* Изменено на fixed */
+    width: 100%;
+    top: 0;
+    z-index: 9999;
+    padding: 10px 0;
+    background: var(--search-bg);
+    border-bottom: 2px solid var(--search-border);
+    text-align: center;
+    box-sizing: border-box;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+#page-search-form input[type="text"] {
+    padding: 8px;
+    border: 1px solid var(--search-input-border);
+    border-radius: 4px;
+    width: 250px;
+    background-color: var(--search-input-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+#page-search-form button {
+    padding: 8px 15px;
+    background-color: var(--button-primary-bg);
+    color: var(--button-primary-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Стили для общей подсветки результатов */
+.highlight {
+    background-color: var(--highlight-color);
+    font-weight: bold;
+    padding: 1px 0;
+    margin: 0 -1px;
+    border-radius: 2px;
+    transition: background-color 0.2s;
+    color: black; /* Для контраста в темной теме */
+}
+
+/* Стили для ТЕКУЩЕГО результата */
+.current-highlight {
+    background-color: var(--current-highlight-color) !important;
+    outline: 2px solid var(--question-text-color);
+    color: black;
+}
+
+/* ================================================= */
+/* === 6. СТИЛИ КНОПКИ-ССЫЛКИ "BEAUTIFUL-BUTTON" === */
+/* ================================================= */
+.button-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.beautiful-button {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--button-primary-color);
+    background-color: var(--button-primary-bg);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.15s ease;
+    cursor: pointer;
+}
+
+.beautiful-button:hover {
+    background-color: var(--button-primary-hover);
+}
+
+.beautiful-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================================= */
+/* === 7. СТИЛИ КНОПКИ ПЕРЕКЛЮЧЕНИЯ ТЕМЫ === */
+/* ================================================= */
+.theme-toggle-button {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    padding: 8px 12px;
+    background-color: var(--toggle-button-bg);
+    color: var(--toggle-button-text);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease, color 0.3s;
+    z-index: 10000;
+}
+
+.theme-toggle-button:hover {
+    opacity: 0.9;
+}
+
+.theme-toggle-button .icon {
+    font-size: 1.2em;
+    line-height: 1;
+    color: var(--toggle-icon-color);
+}
+
+/* --- Стили для изображений (из первого файла) --- */
+.site-unavailable {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ================================================= */
+/* === 8. АДАПТИВНЫЕ СТИЛИ === */
+/* ================================================= */
+@media (max-width: 600px) {
+    body {
+        padding: 5px;
+        /* Убедимся, что верхний отступ достаточен,
+           чтобы заголовок H1 не перекрывался фиксированной шапкой */
+        padding-top: 60px;
+    }
+    h1 {
+        font-size: 1.5em;
+    }
+    #page-search-form input[type="text"] {
+        /* На мобильных устройствах лучше дать input больше места */
+        width: 150px;
+    }
+
+    /* === ИСПРАВЛЕНИЕ: Кнопка только с иконкой === */
+    .theme-toggle-button {
+        padding: 8px; /* Для круглой/квадратной кнопки с одной иконкой */
+        font-size: 16px;
+        top: 5px;
+        right: 5px;
+        gap: 0; /* Удаляем расстояние между текстом и иконкой */
+    }
+    .theme-toggle-button .icon {
+        font-size: 1em;
+    }
+    /* Скрываем текст, который находился в этом ID */
+    #themeText {
+        display: none;
+    }
+    /* =========================================== */
+
+    #search-bar-container {
+        padding: 5px 0;
+    }
+}
