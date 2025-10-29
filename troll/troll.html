@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troll</title>
+    <style>
+        :root {
+            --main-color: #1a2026;
+            --secondary-color: #212932;
+            --text-color: #8794a1;
+        }
+
+        body {
+            background-color: var(--main-color);
+            color: white;
+            font-weight: bold;
+            margin: 0;
+            overflow: hidden;
+            /* Чтобы не было прокрутки при заставке */
+        }
+
+        /* Заставка */
+        #splash {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        #splash img {
+            width: 50%;
+            height: 50%
+
+        }
+
+        /* Основной контент (изначально скрыт) */
+        #content {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #music {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .ratatuy {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Заставка -->
+    <div id="splash">
+        <img src="dog.jpeg" alt="Ratatuy">
+    </div>
+
+    <!-- Основной контент -->
+    <div id="content">
+        <video controls autoplay loop id="music">
+            <source src="music.mp3" type="audio/mpeg">
+        </video>
+        <img src="ratatuy.jpg" alt="Fuck" class="ratatuy">
+    </div>
+
+    <script>
+        const splash = document.getElementById('splash');
+        const content = document.getElementById('content');
+        const audio = document.getElementById('music');
+
+        // При клике на заставку — убираем её и показываем контент
+        splash.addEventListener('click', () => {
+            splash.style.display = 'none';
+            content.style.display = 'block';
+            document.body.style.overflow = 'auto'; // Разрешаем прокрутку
+            audio.play();
+        });
+
+        // Поддержка постоянного воспроизведения (если кто-то нажмёт "пауза")
+        setInterval(() => {
+            if (audio.paused) audio.play();
+        }, 500);
+    </script>
+
+</body>
+
+</html>
