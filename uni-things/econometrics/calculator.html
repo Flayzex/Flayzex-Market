@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Эконометрический Калькулятор</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .display-none {
+            display: none;
+        }
+        .calculator-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--block-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: background-color .3s, border-color .3s;
+        }
+
+        .input-table-container {
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        /* === ИСПРАВЛЕНИЕ СТИЛЕЙ ИНПУТОВ === */
+        .input-table input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid var(--search-input-border);
+            border-radius: 4px;
+            background-color: var(--search-input-bg);
+            color: var(--text-color);
+            text-align: center;
+            transition: background-color .3s, color .3s, border-color .3s;
+        }
+
+        .input-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .input-table th,
+        .input-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .calculator-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #results-container {
+            margin-top: 30px;
+            border-top: 2px solid var(--secondary-header-color);
+            padding-top: 20px;
+        }
+
+        .error-message {
+            color: var(--question-text-color);
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .main-equation-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            background-color: var(--question-header-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .final-result-preview {
+            font-weight: normal;
+            color: var(--secondary-header-color);
+            margin-left: auto;
+            margin-right: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-content blockquote {
+            background-color: var(--bg-color);
+            border-left: 3px solid var(--secondary-header-color);
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-family: Arial, sans-serif;
+            font-size: 1.1em;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .math-inline,
+        .math-display {
+            display: block;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-size: 1.05em;
+        }
+
+        .math-display {
+            font-size: 1.15em;
+        }
+
+        .answer-content .calculation-line {
+            display: block;
+            margin: 5px 0 5px 10px;
+            font-size: 1em;
+            color: var(--text-color);
+            text-align: center;
+            padding: 5px;
+        }
+
+        .answer-content pre {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-color);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow-x: auto;
+            color: var(--text-color);
+            white-space: pre;
+            text-align: left;
+        }
+
+        #search-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #page-search-form {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+
+        .theme-toggle-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+
+        @media (max-width:600px) {
+            .math-display {
+                font-size: 1em;
+            }
+        }
+    </style>
+
+    <!-- MathJax (TeX input) -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+    <div class="button-container">
+        <a href="https://flayzex-market.vercel.app/uni-things/philosophy/questions-answers.html"
+            class="beautiful-button">
+            Перейти на "Философия"
+        </a>
+    </div>
+
+    <div id="search-bar-container">
+        <form id="page-search-form">
+            <input type="text" id="search-input" placeholder="Поиск по расчётам...">
+            <button type="submit" id="search-button">Искать</button>
+            <span id="search-results-count"></span>
+        </form>
+        <button id="themeToggle" class="theme-toggle-button"><span id="themeIcon"
+                class="icon"></span><span id="themeText"></span></button>
+    </div>
+
+
+
+    <h1>Эконометрический Калькулятор</h1>
+
+    <div class="calculator-container">
+        <h2 id="data-input-header">Ввод данных</h2>
+        <div class="input-table-container">
+            <table id="data-table" class="input-table">
+                <thead>
+                    <tr>
+                        <th>N</th>
+                        <th>Y</th>
+                        <th>X</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="number" id="Y1"></td>
+                        <td><input type="number" id="X1"></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><input type="number" id="Y2"></td>
+                        <td><input type="number" id="X2"></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><input type="number" id="Y3"></td>
+                        <td><input type="number" id="X3"></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><input type="number" id="Y4"></td>
+                        <td><input type="number" id="X4"></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><input type="number" id="Y5"></td>
+                        <td><input type="number" id="X5"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="calculator-buttons">
+            <button id="calculateButton" class="beautiful-button">Рассчитать</button>
+            <button id="clearButton" class="beautiful-button">Очистить</button>
+        </div>
+
+        <div id="error-display" class="error-message" style="display:none"></div>
+
+        <div id="results-container" style="display:none">
+            <h2 id="results-header">Результаты расчёта</h2>
+
+            <p class="main-equation-display">
+                <strong>Уравнение регрессии:</strong>
+                <span id="regression-equation">Y = a + bX</span>
+            </p>
+
+            <div id="faq-container">
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>1. Коэффициент b (Регрессии)</span>
+                        <span class="final-result-preview" id="param-b"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-b-formula" class="math-display"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="sum-x-b"></span>
+                        <span class="calculation-line" id="sum-y-b"></span>
+                        <span class="calculation-line" id="sum-xy-b"></span>
+                        <span class="calculation-line" id="sum-x2-b"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-b-full" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>2. Коэффициент a (Свободный член)</span>
+                        <span class="final-result-preview" id="param-a"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-a-formula" class="math-inline"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="mean-y-a"></span>
+                        <span class="calculation-line" id="mean-x-a"></span>
+                        <span class="calculation-line" id="param-b-a"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-a-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>3. Средняя ошибка аппроксимации (Ā)</span>
+                        <span class="final-result-preview" id="avg-approx-error"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-abar-formula" class="math-inline"></div>
+                        </blockquote>
+
+                        <p>Где \\(\\hat{Y} = a + b\\cdot X\\) (расчётное значение Y)</p>
+
+                        <p class="display-none"><strong>Расчёт суммы ошибок:</strong></p>
+                        <!-- Важное: таблица вывода ошибки сохраняется в <pre>, как в вашем старом коде -->
+                        <pre id="calc-a-bar-details" class="display-none"></pre>
+
+                        <p><strong>Итоговый расчёт:</strong></p>
+                        <blockquote id="calc-a-bar-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>4. Коэффициент корреляции (r_{xy})</span>
+                        <span class="final-result-preview" id="correlation-coeff"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-r-formula" class="math-display"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="calc-r-numerator"></span>
+                        <span class="calculation-line" id="calc-r-denom-x"></span>
+                        <span class="calculation-line" id="sum-y2-r"></span>
+                        <span class="calculation-line" id="calc-r-denom-y"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-r-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>5. Коэффициент эластичности (Э̄)</span>
+                        <span class="final-result-preview" id="elasticity-coeff"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-e-formula" class="math-inline"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="param-b-e"></span>
+                        <span class="calculation-line" id="mean-x-e"></span>
+                        <span class="calculation-line" id="mean-y-e"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-e-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <a href="#data-input-header" class="back-to-top" style="display:none;">↑ Наверх</a>
+    <footer>
+        <span>© 2025 Flayzex, Inc. (This site is in beta)</span>
+    </footer>
+
+    <script src="../js/dark-theme.js"></script>
+    <script src="../js/search-bar-and-accordion.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calculateButton = document.getElementById('calculateButton');
+            const clearButton = document.getElementById('clearButton');
+            const resultsContainer = document.getElementById('results-container');
+            const errorDisplay = document.getElementById('error-display');
+
+            // defaults
+            const defaultY = [21, 18, 26, 33, 36];
+            const defaultX = [19, 21, 28, 22, 24];
+            defaultY.forEach((v, i) => document.getElementById(`Y${i + 1}`).value = v);
+            defaultX.forEach((v, i) => document.getElementById(`X${i + 1}`).value = v);
+
+            calculateButton.addEventListener('click', calculateEconometrics);
+            clearButton.addEventListener('click', clearInputs);
+
+            function getInputs() {
+                const Y = [], X = [];
+                for (let i = 1; i <= 5; i++) {
+                    const y = document.getElementById(`Y${i}`).value;
+                    const x = document.getElementById(`X${i}`).value;
+                    if (y === '' || x === '') return null;
+                    Y.push(parseFloat(y)); X.push(parseFloat(x));
+                }
+                return { Y, X, n: Y.length };
+            }
+
+            function displayError(msg) {
+                errorDisplay.textContent = msg;
+                errorDisplay.style.display = 'block';
+                resultsContainer.style.display = 'none';
+            }
+            function hideError() { errorDisplay.style.display = 'none'; }
+
+            function pad(num, length = 6, alignLeft = false) {
+                const s = num.toString();
+                return alignLeft ? s.padEnd(length, ' ') : s.padStart(length, ' ');
+            }
+
+            async function calculateEconometrics() {
+                hideError();
+                const inputs = getInputs();
+                if (!inputs) { displayError('Пожалуйста, заполните все поля ввода!'); return; }
+                const { Y, X, n } = inputs;
+
+                if (new Set(X).size < 2) { displayError('Ошибка: Все значения X одинаковы. Регрессия невозможна.'); return; }
+                if (new Set(Y).size < 2) { displayError('Ошибка: Все значения Y одинаковы. Корреляция невозможна.'); return; }
+
+                // sums
+                let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+                for (let i = 0; i < n; i++) { sumX += X[i]; sumY += Y[i]; sumXY += X[i] * Y[i]; sumX2 += X[i] * X[i]; sumY2 += Y[i] * Y[i]; }
+                const meanX = sumX / n, meanY = sumY / n;
+
+                // b, a
+                const numeratorB = (n * sumXY - sumX * sumY);
+                const denominatorB = (n * sumX2 - sumX * sumX);
+                const b = numeratorB / denominatorB;
+                const a = meanY - b * meanX;
+
+                // A_bar details (keep pre table)
+                let sumAbsRelativeError = 0;
+                let a_bar_details = `i  | Y_i   | X_i   | \\hat{Y}_i = ${a.toFixed(4)} + ${b.toFixed(4)}*X_i | |(Y_i-\\hat{Y}_i)/Y_i|\\n`;
+                a_bar_details += `---+-------+-------+-------------------------+---------------\\n`;
+                for (let i = 0; i < n; i++) {
+                    const yHat = a + b * X[i];
+                    let relError = 0;
+                    if (Y[i] !== 0) { relError = Math.abs((Y[i] - yHat) / Y[i]); sumAbsRelativeError += relError; }
+                    a_bar_details += `${pad(i + 1, 2, true)}| ${pad(Y[i], 6)}| ${pad(X[i], 6)}| ${pad(yHat.toFixed(4), 24)}| ${pad(relError.toFixed(4), 14)}\\n`;
+                }
+                a_bar_details += `---+-------+-------+-------------------------+---------------\\n`;
+                a_bar_details += `                                       Сумма = ${pad(sumAbsRelativeError.toFixed(4), 14)}\\n`;
+                const avgApproxError = (sumAbsRelativeError / n) * 100;
+
+                // r_xy
+                const numeratorR = numeratorB;
+                const denominatorR_X = denominatorB;
+                const denominatorR_Y = (n * sumY2 - sumY * sumY);
+                const r_xy = numeratorR / Math.sqrt(denominatorR_X * denominatorR_Y);
+
+                // elasticity
+                const elasticityCoeff = b * (meanX / meanY);
+
+                // Fill HTML
+                document.getElementById('regression-equation').textContent = `Y = ${a.toFixed(4)} + ${b.toFixed(4)}X`;
+
+                // b block
+                document.getElementById('param-b').textContent = b.toFixed(4);
+                document.getElementById('sum-x-b').innerHTML = `&sum;X = ${sumX}`;
+                document.getElementById('sum-y-b').innerHTML = `&sum;Y = ${sumY}`;
+                document.getElementById('sum-xy-b').innerHTML = `&sum;(XY) = ${sumXY}`;
+                document.getElementById('sum-x2-b').innerHTML = `&sum;X&sup2; = ${sumX2}`;
+                const texB = `\\displaystyle b=\\frac{n\\sum XY - (\\sum X)(\\sum Y)}{n\\sum X^2 - (\\sum X)^2} = \\frac{${numeratorB.toFixed(2)}}{${denominatorB.toFixed(2)}} = ${b.toFixed(4)}`;
+                document.getElementById('math-b-formula').innerHTML = `\\(${texB}\\)`;
+                document.getElementById('calc-b-full').innerHTML = `\\(${texB}\\)`;
+
+                // a block (use \\bar for means)
+                document.getElementById('param-a').textContent = a.toFixed(4);
+                document.getElementById('mean-y-a').textContent = 'Ȳ = ΣY / n = ...'
+                document.getElementById('mean-x-a').textContent = `\\(\\bar{X} = \\frac{\\sum X}{n} = ${sumX} / ${n} = ${meanX.toFixed(4)}\\)`;
+                document.getElementById('param-b-a').textContent = `b = ${b.toFixed(4)}`;
+                const texA = `\\displaystyle a=\\bar{Y} - b\\,\\bar{X} = ${meanY.toFixed(4)} - ${b.toFixed(4)}\\times ${meanX.toFixed(4)} = ${a.toFixed(4)}`;
+                document.getElementById('math-a-formula').innerHTML = `\\(a=\\bar{Y} - b\\,\\bar{X}\\)`;
+                document.getElementById('calc-a-result').innerHTML = `\\(${texA}\\)`;
+
+                // A_bar block (pre kept)
+                document.getElementById('avg-approx-error').textContent = `${avgApproxError.toFixed(2)}%`;
+                // document.getElementById('calc-a-bar-details').textContent = a_bar_details;
+                const texAbar = `\\displaystyle \\bar{A}=\\frac{1}{n}\\sum\\left|\\frac{Y_i-\\hat{Y}_i}{Y_i}\\right|\\times100\\% = \\frac{${sumAbsRelativeError.toFixed(4)}}{${n}}\\times100\\% = ${avgApproxError.toFixed(2)}\\%`;
+                document.getElementById('math-abar-formula').innerHTML = `\\(\\bar{A}=\\frac{1}{n}\\sum\\left|\\frac{Y_i-\\hat{Y}_i}{Y_i}\\right|\\times100\\%\\)`;
+                document.getElementById('calc-a-bar-result').innerHTML = `\\(${texAbar}\\)`;
+
+                // r block
+                document.getElementById('correlation-coeff').textContent = r_xy.toFixed(4);
+                document.getElementById('calc-r-numerator').textContent = `Числитель = ${numeratorR.toFixed(2)}`;
+                document.getElementById('calc-r-denom-x').textContent = `Знаменатель (X) = ${denominatorR_X.toFixed(2)}`;
+                document.getElementById('sum-y2-r').textContent = `ΣY² = ${sumY2}`;
+                document.getElementById('calc-r-denom-y').textContent = `Знаменатель (Y) = (${n} × ${sumY2}) - (${sumY}²) = ${denominatorR_Y.toFixed(2)}`;
+                const sqrtDenom = Math.sqrt(denominatorR_X * denominatorR_Y);
+                const texR = `\\displaystyle r_{xy}=\\frac{${numeratorR.toFixed(2)}}{\\sqrt{${denominatorR_X.toFixed(2)}\\times${denominatorR_Y.toFixed(2)}}} = \\frac{${numeratorR.toFixed(2)}}{${sqrtDenom.toFixed(2)}} = ${r_xy.toFixed(4)}`;
+                document.getElementById('math-r-formula').innerHTML = `\\(r_{xy}=\\dfrac{n\\sum XY - (\\sum X)(\\sum Y)}{\\sqrt{(n\\sum X^2-(\\sum X)^2)(n\\sum Y^2-(\\sum Y)^2)}}\\)`;
+                document.getElementById('calc-r-result').innerHTML = `\\(${texR}\\)`;
+
+                // E block
+                document.getElementById('elasticity-coeff').textContent = elasticityCoeff.toFixed(4);
+                document.getElementById('param-b-e').textContent = `b = ${b.toFixed(4)}`;
+                document.getElementById('mean-x-e').textContent = `\\(\\bar{X} = ${meanX.toFixed(4)}\\)`;
+                document.getElementById('mean-y-e').textContent = `\\(\\bar{Y} = ${meanY.toFixed(4)}\\)`;
+                const texE = `\\displaystyle \\bar{E}=b\\cdot\\frac{\\bar{X}}{\\bar{Y}} = ${b.toFixed(4)}\\cdot\\frac{${meanX.toFixed(4)}}{${meanY.toFixed(4)}} = ${elasticityCoeff.toFixed(4)}`;
+                document.getElementById('math-e-formula').innerHTML = `\\(\\bar{E}=b\\cdot\\dfrac{\\bar{X}}{\\bar{Y}}\\)`;
+                document.getElementById('calc-e-result').innerHTML = `\\(${texE}\\)`;
+
+                resultsContainer.style.display = 'block';
+
+                // Re-render MathJax for newly inserted TeX
+                if (window.MathJax && MathJax.typesetPromise) {
+                    try { await MathJax.typesetPromise(); }
+                    catch (e) { console.warn('MathJax render failed', e); }
+                }
+            }
+
+            function clearInputs() {
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`Y${i}`).value = '';
+                    document.getElementById(`X${i}`).value = '';
+                }
+                resultsContainer.style.display = 'none';
+                hideError();
+                // close accordions if any (from your accordion script)
+                const active = document.querySelectorAll('.accordion-item.active');
+                active.forEach(it => it.classList.remove('active'));
+            }
+
+            // initial run
+            calculateEconometrics();
+
+            // back-to-top behavior
+            const backToTop = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+            });
+            backToTop.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('data-input-header').scrollIntoView({ behavior: 'smooth' }); });
+        });
+    </script>
+</body>
+
+</html>
