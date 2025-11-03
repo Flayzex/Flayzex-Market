@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="Flayzex">
+    <meta property="og:description" content="Эконометрический Калькулятор">
+    <meta property="og:image"
+        content="https://flayzex-market.vercel.app/uni-things/flayzex-logo.png">
+    <meta property="og:url"
+        content="https://flayzex-market.vercel.app/uni-things/econometrics/calculator.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Flayzex">
+    <meta name="twitter:description" content="Эконометрический Калькулятор">
+    <meta name="twitter:image"
+        content="https://flayzex-market.vercel.app/uni-things/flayzex-logo.png">
+    <title>Эконометрический Калькулятор</title>
+
+    <link rel="icon" type="image/png" href="../../../static/erasebg-transformed.png">
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- Встроенные стили: ваша тема и минимальные новые правила -->
+    <style>
+        .calculator-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--block-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: background-color .3s, border-color .3s;
+        }
+
+        .input-table-container {
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .input-table input[type="number"] {
+            width: 110px;
+            padding: 8px;
+            border: 1px solid var(--search-input-border);
+            border-radius: 4px;
+            background-color: var(--search-input-bg);
+            color: var(--text-color);
+            text-align: center;
+            transition: background-color .3s, color .3s, border-color .3s;
+        }
+
+        .input-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .input-table th,
+        .input-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .calculator-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #results-container {
+            margin-top: 30px;
+            border-top: 2px solid var(--secondary-header-color);
+            padding-top: 20px;
+        }
+
+        .error-message {
+            color: var(--question-text-color);
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .main-equation-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            background-color: var(--question-header-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .final-result-preview {
+            font-weight: normal;
+            color: var(--secondary-header-color);
+            margin-left: auto;
+            margin-right: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-content blockquote {
+            background-color: var(--bg-color);
+            border-left: 3px solid var(--secondary-header-color);
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-family: Arial, sans-serif;
+            font-size: 1.1em;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .math-inline,
+        .math-display {
+            display: block;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .math-inline {
+            font-size: 1.05em;
+        }
+
+        .math-display {
+            font-size: 1.15em;
+        }
+
+        .answer-content .calculation-line {
+            display: block;
+            margin: 5px 0 5px 10px;
+            font-size: 1em;
+            color: var(--text-color);
+            text-align: center;
+            padding: 5px;
+        }
+
+        .answer-content pre {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-color);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow-x: auto;
+            color: var(--text-color);
+            white-space: pre;
+            text-align: left;
+        }
+
+        #search-bar-container {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 9999;
+            padding: 10px 0;
+            background: var(--search-bg);
+            border-bottom: 2px solid var(--search-border);
+            text-align: center;
+            box-sizing: border-box;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .theme-toggle-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 12px;
+            background-color: var(--toggle-button-bg);
+            color: var(--toggle-button-text);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease, color 0.3s;
+            z-index: 10000;
+        }
+
+        .theme-toggle-button .icon {
+            font-size: 1.2em;
+            line-height: 1;
+            color: var(--toggle-icon-color);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+                padding-top: 60px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .input-table input[type="number"] {
+                width: 90px;
+            }
+
+            .theme-toggle-button {
+                padding: 8px;
+                font-size: 16px;
+                top: 5px;
+                right: 5px;
+                gap: 0;
+            }
+
+            #themeText {
+                display: none;
+            }
+
+            #search-bar-container {
+                padding: 5px 0;
+            }
+        }
+
+        /* accordion styles (kept as before) */
+        .accordion-item {
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: var(--block-bg);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .question-header {
+            background-color: var(--question-header-bg);
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: var(--question-text-color);
+            transition: background-color .3s, color .3s;
+        }
+
+        .question-header:hover {
+            background-color: var(--question-header-hover);
+        }
+
+        .accordion-item.active .question-header {
+            background-color: var(--question-header-hover);
+        }
+
+        .question-header .icon {
+            font-size: 1.2em;
+            transition: transform .3s;
+        }
+
+        .accordion-item.active .question-header .icon {
+            transform: rotate(90deg);
+        }
+
+        .answer-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease-out, padding .3s ease-out;
+            border-left: 5px solid var(--answer-border-color);
+        }
+
+        .answer-content.show {
+            max-height: 2000px;
+            padding: 15px;
+        }
+
+        /* minimal row controls styles */
+        .table-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .delete-row-button {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-row-button:hover {
+            opacity: .9;
+        }
+
+        #addRowButton {
+            margin-left: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--button-primary-bg);
+            color: var(--button-primary-color);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .index-cell {
+            width: 48px;
+            text-align: center;
+        }
+
+        .delete-icon {
+            font-family: monospace;
+            line-height: 1;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+
+    <div id="search-bar-container">
+        <!-- Оставляем кнопку переключения темы как прежде, управление темой берёт на себя внешняя dark-theme.js (восстановлено) -->
+        <button id="themeToggle" class="theme-toggle-button"><span id="themeIcon"
+                class="icon"></span><span id="themeText"></span></button>
+    </div>
+
+    <h1>Эконометрический Калькулятор</h1>
+
+    <div class="calculator-container">
+        <h2 id="data-input-header">Ввод данных</h2>
+
+
+
+        <div class="input-table-container">
+            <table id="data-table" class="input-table" aria-describedby="data-input-header">
+                <thead>
+                    <tr>
+                        <th>N</th>
+                        <th>Y</th>
+                        <th>X</th>
+                        <th>Удалить</th>
+                    </tr>
+                </thead>
+                <tbody id="data-tbody">
+                    <!-- строки добавляются динамически -->
+                </tbody>
+            </table>
+        </div>
+        <div class="table-controls">
+            <div style="flex:1"></div>
+            <button id="addRowButton" class="beautiful-button" title="Добавить строку">Добавить
+                строку</button>
+        </div>
+        <div class="calculator-buttons">
+            <button id="calculateButton" class="beautiful-button">Рассчитать</button>
+            <button id="clearButton" class="beautiful-button">Очистить</button>
+        </div>
+
+        <div id="error-display" class="error-message" style="display:none"></div>
+
+        <div id="results-container" style="display:none">
+            <h2 id="results-header">Результаты расчёта</h2>
+
+            <p class="main-equation-display">
+                <strong>Уравнение регрессии:</strong>
+                <span id="regression-equation">Y = a + bX</span>
+            </p>
+
+            <div id="faq-container">
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>1. Коэффициент b (Регрессии)</span>
+                        <span class="final-result-preview" id="param-b"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-b-formula" class="math-display"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="sum-x-b"></span>
+                        <span class="calculation-line" id="sum-y-b"></span>
+                        <span class="calculation-line" id="sum-xy-b"></span>
+                        <span class="calculation-line" id="sum-x2-b"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-b-full" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>2. Коэффициент a (Свободный член)</span>
+                        <span class="final-result-preview" id="param-a"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-a-formula" class="math-inline"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="mean-y-a"></span>
+                        <span class="calculation-line" id="mean-x-a"></span>
+                        <span class="calculation-line" id="param-b-a"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-a-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>3. Средняя ошибка аппроксимации (Ā)</span>
+                        <span class="final-result-preview" id="avg-approx-error"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-abar-formula" class="math-inline"></div>
+                        </blockquote>
+
+                        <p>Где:</p>
+                        <blockquote>
+                            <div class="math-inline">
+                                \(\hat{Y} = a + b \cdot X\) (расчётное значение Y)
+                            </div>
+                        </blockquote>
+
+                        <p class="display-none"><strong>Расчёт суммы ошибок:</strong></p>
+                        <pre id="calc-a-bar-details" class="display-none"></pre>
+
+                        <p><strong>Итоговый расчёт:</strong></p>
+                        <blockquote id="calc-a-bar-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>4. Коэффициент корреляции (r_{xy})</span>
+                        <span class="final-result-preview" id="correlation-coeff"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-r-formula" class="math-display"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="calc-r-numerator"></span>
+                        <span class="calculation-line" id="calc-r-denom-x"></span>
+                        <span class="calculation-line" id="sum-y2-r"></span>
+                        <span class="calculation-line" id="calc-r-denom-y"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-r-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="question-header">
+                        <span>5. Коэффициент эластичности (Э̄)</span>
+                        <span class="final-result-preview" id="elasticity-coeff"></span>
+                        <span class="icon">►</span>
+                    </div>
+                    <div class="answer-content">
+                        <p><strong>Формула:</strong></p>
+                        <blockquote>
+                            <div id="math-e-formula" class="math-inline"></div>
+                        </blockquote>
+
+                        <p><strong>Промежуточные расчеты:</strong></p>
+                        <span class="calculation-line" id="param-b-e"></span>
+                        <span class="calculation-line" id="mean-x-e"></span>
+                        <span class="calculation-line" id="mean-y-e"></span>
+
+                        <p><strong>Расчёт:</strong></p>
+                        <blockquote id="calc-e-result" class="math-display"></blockquote>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>© 2025 Flayzex, Inc. (This site is in beta)</span>
+    </footer>
+
+    <!-- Внешние скрипты (оставлены как у вас) -->
+    <script src="../../js/dark-theme.js"></script>
+    <script src="../../js/search-bar-and-accordion.js"></script>
+
+    <!-- Логика: динамические строки и расчёты. Формулы исправлены для корректного отображения MathJax.
+         Важное изменение: переключение темы оставлено внешнему скрипту dark-theme.js (функция восстановления). -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calculateButton = document.getElementById('calculateButton');
+            const clearButton = document.getElementById('clearButton');
+            const resultsContainer = document.getElementById('results-container');
+            const errorDisplay = document.getElementById('error-display');
+            const dataTbody = document.getElementById('data-tbody');
+            const addRowButton = document.getElementById('addRowButton');
+
+            // defaults
+            const defaultY = [21, 18, 26, 33, 36];
+            const defaultX = [19, 21, 28, 22, 24];
+
+            function createRow(index, yValue, xValue) {
+                const tr = document.createElement('tr');
+                tr.classList.add('data-row');
+
+                const tdIndex = document.createElement('td');
+                tdIndex.className = 'index-cell';
+                tdIndex.textContent = index;
+
+                const tdY = document.createElement('td');
+                const inputY = document.createElement('input');
+                inputY.type = 'number';
+                inputY.className = 'input-y';
+                inputY.value = (yValue !== undefined) ? yValue : '';
+                tdY.appendChild(inputY);
+
+                const tdX = document.createElement('td');
+                const inputX = document.createElement('input');
+                inputX.type = 'number';
+                inputX.className = 'input-x';
+                inputX.value = (xValue !== undefined) ? xValue : '';
+                tdX.appendChild(inputX);
+
+                const tdActions = document.createElement('td');
+                tdActions.className = 'row-actions';
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'delete-row-button';
+                deleteBtn.title = 'Удалить строку';
+                deleteBtn.innerHTML = '<span class="delete-icon">✕</span>';
+                deleteBtn.addEventListener('click', () => {
+                    if (getRowCount() <= 2) {
+                        displayError('Оставьте минимум 2 строки данных для расчётов.');
+                        return;
+                    }
+                    tr.remove();
+                    refreshRowIndices();
+                });
+                tdActions.appendChild(deleteBtn);
+
+                tr.appendChild(tdIndex);
+                tr.appendChild(tdY);
+                tr.appendChild(tdX);
+                tr.appendChild(tdActions);
+
+                return tr;
+            }
+
+            function seedInitialRows() {
+                dataTbody.innerHTML = '';
+                const initialCount = Math.max(defaultY.length, defaultX.length, 5);
+                for (let i = 0; i < initialCount; i++) {
+                    const y = defaultY[i];
+                    const x = defaultX[i];
+                    const row = createRow(i + 1, y, x);
+                    dataTbody.appendChild(row);
+                }
+            }
+
+            function getRowCount() {
+                return dataTbody.querySelectorAll('tr.data-row').length;
+            }
+
+            function refreshRowIndices() {
+                const rows = dataTbody.querySelectorAll('tr.data-row');
+                rows.forEach((r, i) => {
+                    const idxCell = r.querySelector('.index-cell');
+                    if (idxCell) idxCell.textContent = i + 1;
+                });
+            }
+
+            function displayError(msg) {
+                errorDisplay.textContent = msg;
+                errorDisplay.style.display = 'block';
+                resultsContainer.style.display = 'none';
+            }
+            function hideError() { errorDisplay.style.display = 'none'; }
+
+            function getInputs() {
+                const Y = [], X = [];
+                const rows = dataTbody.querySelectorAll('tr.data-row');
+                for (const row of rows) {
+                    const yInput = row.querySelector('.input-y');
+                    const xInput = row.querySelector('.input-x');
+                    const yVal = yInput.value;
+                    const xVal = xInput.value;
+                    if (yVal === '' || xVal === '') return null;
+                    Y.push(parseFloat(yVal));
+                    X.push(parseFloat(xVal));
+                }
+                return { Y, X, n: Y.length };
+            }
+
+            function pad(num, length = 6, alignLeft = false) {
+                const s = Number(num).toFixed(4).toString();
+                return alignLeft ? s.padEnd(length, ' ') : s.padStart(length, ' ');
+            }
+
+            async function calculateEconometrics() {
+                hideError();
+                const inputs = getInputs();
+                if (!inputs) { displayError('Пожалуйста, заполните все поля ввода!'); return; }
+                const { Y, X, n } = inputs;
+
+                if (n < 2) { displayError('Нужно как минимум 2 точки для расчёта.'); return; }
+                if (new Set(X).size < 2) { displayError('Ошибка: Все значения X одинаковы. Регрессия невозможна.'); return; }
+                if (new Set(Y).size < 2) { displayError('Ошибка: Все значения Y одинаковы. Корреляция невозможна.'); return; }
+
+                let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+                for (let i = 0; i < n; i++) {
+                    sumX += X[i];
+                    sumY += Y[i];
+                    sumXY += X[i] * Y[i];
+                    sumX2 += X[i] * X[i];
+                    sumY2 += Y[i] * Y[i];
+                }
+                const meanX = sumX / n, meanY = sumY / n;
+
+                const numeratorB = (n * sumXY - sumX * sumY);
+                const denominatorB = (n * sumX2 - sumX * sumX);
+                const b = numeratorB / denominatorB;
+                const a = meanY - b * meanX;
+
+                let sum_xy_deviation = 0, sum_x2_deviation = 0, sum_y2_deviation = 0;
+                for (let i = 0; i < n; i++) {
+                    const dx = X[i] - meanX;
+                    const dy = Y[i] - meanY;
+                    sum_xy_deviation += dx * dy;
+                    sum_x2_deviation += dx * dx;
+                    sum_y2_deviation += dy * dy;
+                }
+                const r_xy = sum_xy_deviation / Math.sqrt(sum_x2_deviation * sum_y2_deviation);
+
+                // A_bar details
+                let sumAbsRelativeError = 0;
+                let a_bar_details = `i  | Y_i   | X_i   | Ŷ_i = ${a.toFixed(4)} + ${b.toFixed(4)}*X_i | |(Y_i-Ŷ_i)/Y_i|\n`;
+                a_bar_details += `---+-------+-------+-------------------------+---------------\n`;
+                for (let i = 0; i < n; i++) {
+                    const yHat = a + b * X[i];
+                    let relError = 0;
+                    if (Y[i] !== 0) { relError = Math.abs((Y[i] - yHat) / Y[i]); sumAbsRelativeError += relError; }
+                    a_bar_details += `${pad(i + 1, 2, true).substring(0, 2)}| ${pad(Y[i], 6)}| ${pad(X[i], 6)}| ${pad(yHat, 24)}| ${pad(relError, 14)}\n`;
+                }
+                a_bar_details += `---+-------+-------+-------------------------+---------------\n`;
+                a_bar_details += `                                       Сумма = ${pad(sumAbsRelativeError, 14)}\n`;
+                const avgApproxError = (sumAbsRelativeError / n) * 100;
+
+                const elasticityCoeff = b * (meanX / meanY);
+
+                // Fill HTML and set formulas using proper TeX (fixed problematic formulas)
+                document.getElementById('regression-equation').textContent = `Y = ${a.toFixed(4)} + ${b.toFixed(4)}X`;
+
+                // B block: corrected formula display for b (standard OLS one-slope form)
+                document.getElementById('param-b').textContent = b.toFixed(4);
+                document.getElementById('sum-x-b').innerHTML = `&sum;X = ${sumX}`;
+                document.getElementById('sum-y-b').innerHTML = `&sum;Y = ${sumY}`;
+                document.getElementById('sum-xy-b').innerHTML = `&sum;(XY) = ${sumXY}`;
+                document.getElementById('sum-x2-b').innerHTML = `&sum;X&sup2; = ${sumX2}`;
+
+                // Proper TeX for b — use unbiased formula version that renders correctly
+                document.getElementById('math-b-formula').innerHTML = `\\[b=\\frac{n\\sum XY - (\\sum X)(\\sum Y)}{n\\sum X^2 - (\\sum X)^2}\\]`;
+
+                const texB_calc = `\\displaystyle b = \\frac{${numeratorB.toFixed(2)}}{${denominatorB.toFixed(2)}} = ${b.toFixed(4)}`;
+                document.getElementById('calc-b-full').innerHTML = `\\(${texB_calc}\\)`;
+
+                // A block: corrected formula display
+                document.getElementById('param-a').textContent = a.toFixed(4);
+                document.getElementById('mean-y-a').textContent = `Ȳ = ΣY / n = ${sumY} / ${n} = ${meanY.toFixed(4)}`;
+                document.getElementById('mean-x-a').textContent = `X̄ = ΣX / n = ${sumX} / ${n} = ${meanX.toFixed(4)}`;
+                document.getElementById('param-b-a').textContent = `b = ${b.toFixed(4)}`;
+                document.getElementById('math-a-formula').innerHTML = `\\(a = \\bar{Y} - b\\,\\bar{X}\\)`;
+                const texA = `\\displaystyle a=\\bar{Y} - b\\,\\bar{X} = ${meanY.toFixed(4)} - ${b.toFixed(4)}\\times ${meanX.toFixed(4)} = ${a.toFixed(4)}`;
+                document.getElementById('calc-a-result').innerHTML = `\\(${texA}\\)`;
+
+                // A_bar
+                document.getElementById('avg-approx-error').textContent = `${avgApproxError.toFixed(2)}%`;
+                document.getElementById('calc-a-bar-details').textContent = a_bar_details.replace(/\\n/g, '\n');
+                document.getElementById('math-abar-formula').innerHTML = `\\(\\bar{A}=\\frac{1}{n}\\sum\\left|\\frac{Y_i-\\hat{Y}_i}{Y_i}\\right|\\times100\\%\\)`;
+                const texAbar = `\\displaystyle \\bar{A}=\\frac{1}{n}\\sum\\left|\\frac{Y_i-\\hat{Y}_i}{Y_i}\\right|\\times100\\% = \\frac{${sumAbsRelativeError.toFixed(4)}}{${n}}\\times100\\% = ${avgApproxError.toFixed(2)}\\%`;
+                document.getElementById('calc-a-bar-result').innerHTML = `\\(${texAbar}\\)`;
+
+                // R block: corrected and explicit formula for correlation coefficient
+                document.getElementById('correlation-coeff').textContent = r_xy.toFixed(4);
+                document.getElementById('calc-r-numerator').textContent = `Числитель: Σ(Xᵢ - X̄)(Yᵢ - Ȳ) = ${sum_xy_deviation.toFixed(2)}`;
+                document.getElementById('calc-r-denom-x').textContent = `Знаменатель (X часть): Σ(Xᵢ - X̄)² = ${sum_x2_deviation.toFixed(2)}`;
+                document.getElementById('sum-y2-r').textContent = `Знаменатель (Y часть): Σ(Yᵢ - Ȳ)² = ${sum_y2_deviation.toFixed(2)}`;
+                const denominatorR_Product = sum_x2_deviation * sum_y2_deviation;
+                const sqrtDenom = Math.sqrt(denominatorR_Product);
+                document.getElementById('calc-r-denom-y').textContent = `Знаменатель (Корень): √(${sum_x2_deviation.toFixed(2)} × ${sum_y2_deviation.toFixed(2)}) = ${sqrtDenom.toFixed(2)}`;
+
+                // Proper TeX for r
+                document.getElementById('math-r-formula').innerHTML = `\\[r_{xy}=\\frac{\\sum (X_i - \\bar{X})(Y_i - \\bar{Y})}{\\sqrt{\\sum (X_i - \\bar{X})^2 \\sum (Y_i - \\bar{Y})^2}}\\]`;
+                const texR = `\\displaystyle r_{xy}=\\frac{${sum_xy_deviation.toFixed(2)}}{\\sqrt{${sum_x2_deviation.toFixed(2)}\\times${sum_y2_deviation.toFixed(2)}}} = \\frac{${sum_xy_deviation.toFixed(2)}}{${sqrtDenom.toFixed(2)}} = ${r_xy.toFixed(4)}`;
+                document.getElementById('calc-r-result').innerHTML = `\\(${texR}\\)`;
+
+                // E block (elasticity)
+                document.getElementById('elasticity-coeff').textContent = elasticityCoeff.toFixed(4);
+                document.getElementById('param-b-e').textContent = `b = ${b.toFixed(4)}`;
+                document.getElementById('mean-x-e').textContent = `X̄ = ${meanX.toFixed(4)}`;
+                document.getElementById('mean-y-e').textContent = `Ȳ = ${meanY.toFixed(4)}`;
+                document.getElementById('math-e-formula').innerHTML = `\\(\\bar{E}=b\\cdot\\dfrac{\\bar{X}}{\\bar{Y}}\\)`;
+                const texE = `\\displaystyle \\bar{E}=b\\cdot\\frac{\\bar{X}}{\\bar{Y}} = ${b.toFixed(4)}\\cdot\\frac{${meanX.toFixed(4)}}{${meanY.toFixed(4)}} = ${elasticityCoeff.toFixed(4)}`;
+                document.getElementById('calc-e-result').innerHTML = `\\(${texE}\\)`;
+
+                resultsContainer.style.display = 'block';
+
+                // Re-render MathJax
+                if (window.MathJax && MathJax.typesetPromise) {
+                    try { await MathJax.typesetPromise(); }
+                    catch (e) { console.warn('MathJax render failed', e); }
+                }
+            }
+
+            function clearInputs() {
+                const rows = dataTbody.querySelectorAll('tr.data-row');
+                rows.forEach(r => {
+                    r.querySelector('.input-y').value = '';
+                    r.querySelector('.input-x').value = '';
+                });
+                resultsContainer.style.display = 'none';
+                hideError();
+                const active = document.querySelectorAll('.accordion-item.active');
+                active.forEach(it => it.classList.remove('active'));
+            }
+
+            function addEmptyRow() {
+                const idx = getRowCount() + 1;
+                const row = createRow(idx, undefined, undefined);
+                dataTbody.appendChild(row);
+                row.querySelector('.input-y').focus();
+            }
+
+            // init
+            seedInitialRows();
+
+            calculateButton.addEventListener('click', calculateEconometrics);
+            clearButton.addEventListener('click', clearInputs);
+            addRowButton.addEventListener('click', addEmptyRow);
+
+            dataTbody.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); calculateEconometrics(); }
+            });
+
+            // initial run (attempt calculate; if inputs empty, user will see message)
+            calculateEconometrics();
+
+            // Note: theme toggle logic was reverted to external dark-theme.js (as requested).
+            // If external script binds to #themeToggle, it will restore the previous behavior.
+        });
+    </script>
+</body>
+
+</html>
